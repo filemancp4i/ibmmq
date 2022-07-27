@@ -16,7 +16,20 @@ To be more specific, the following items are included:
 ```
 openssl req -newkey rsa:2048 -nodes -keyout tls.key -subj "/CN=localhost" -x509 -days 3650 -out tls.crt
 ```
+two files (tls.crt and tls.key) are created by openssl
 
+run following commands and replace the strings (line 36 and 37) inside the demo-mq.yaml file. 
+```
+base64 tls.crt 
+base64 tls.key 
+```
+
+Apply yaml file to OpenShift to create a QueueManager
 ```
 oc apply -f demo-mq.yaml
+```
+
+Execute this script to create key store. This keystore file will be used by client applications to establish TLS secured connection to MQ.
+```
+keytool -import -trustcacerts -alias democrt -file tls.crt -keystore /your/local/file/system/demo.jks
 ```
