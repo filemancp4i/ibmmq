@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: tools 
+  name: mq-mqsc-demo
+data:
+  mqsc: |
+    * definitions usually for FTE Coordinator
+    DEFINE CHANNEL(DEMO.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP) SSLCAUTH(OPTIONAL) SSLCIPH('ANY_TLS12_OR_HIGHER')
+    SET CHLAUTH(DEMO.SVRCONN) TYPE(BLOCKUSER) USERLIST('nobody') ACTION(ADD)
+    DEFINE TOPIC(SYSTEM.FTE) TOPICSTR('SYSTEM.FTE') NPMSGDLV(ALLAVAIL) PMSGDLV(ALLAVAIL) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE) LIKE(SYSTEM.BROKER.DEFAULT.STREAM) DESCR('Stream for MQMFT Pub/Sub interface') REPLACE
+    ALTER NAMELIST(SYSTEM.QPUBSUB.QUEUE.NAMELIST) NAMES(SYSTEM.BROKER.DEFAULT.STREAM,SYSTEM.BROKER.ADMIN.STREAM,SYSTEM.FTE) 
+    ALTER QMGR PSMODE(ENABLED)
+    * Agent qmgr setup - AGENT1
+    DEFINE QLOCAL(SYSTEM.FTE.COMMAND.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.DATA.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.REPLY.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.STATE.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.EVENT.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.AUTHAGT1.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.AUTHTRN1.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.AUTHOPS1.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.AUTHSCH1.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.AUTHMON1.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.AUTHADM1.AGENT1) REPLACE
+    DEFINE QLOCAL(SYSTEM.FTE.HA.AGENT1) REPLACE
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  namespace: tools 
+  name: mq-tls-demo
+data:
+  tls.crt: LS0tLS1...
+  tls.key: LS0tLS1...
+type: Opaque
+---
+apiVersion: mq.ibm.com/v1beta1
+kind: QueueManager
+metadata:
+  namespace: tools 
+  name: qmgr-demo
+spec:
+  license:
+    accept: true
+    license: L-RJON-C7QG3S 
+    use: NonProduction
+  web:
+    enabled: true
+  version: 9.2.4.0-r1
+  template:
+    pod:
+      containers:
+        - env:
+            - name: MQSNOAUT
+              value: 'yes'
+          name: qmgr
+  queueManager:
+    name: DEMO
+    mqsc:
+      - configMap:
+          items:
+            - mqsc
+          name: mq-mqsc-demo
+    availability:
+      type: SingleInstance
+    storage:
+      queueManager:
+        type: ephemeral 
+  pki:
+    keys:
+    - name: default
+      secret:
+        secretName: mq-tls-demo
+        items:
+          - tls.key
+          - tls.crt
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  namespace: tools 
+  name: demo-svrconn-route
+spec:
+  host: demo2e-svrconn.chl.mq.ibm.com
+  to:
+    kind: Service
+    name: qmgr-demo-ibm-mq
+  port:
+    targetPort: 1414
+  tls:
+    termination: passthrough
+...
