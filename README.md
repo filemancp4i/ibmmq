@@ -16,3 +16,7 @@ To be more specific, the following items are included:
 ```
 openssl req -newkey rsa:2048 -nodes -keyout tls.key -subj "/CN=localhost" -x509 -days 3650 -out tls.crt
 ```
+
+```
+oc apply -f demo-mq.yaml
+```
