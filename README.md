@@ -11,6 +11,7 @@ To be more specific, the following items are included:
 -   Queue Manager
 -   ConfigMap
 -   Secret
+-   Channel
 -   Route
 
 ```
