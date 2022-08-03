@@ -21,11 +21,11 @@ To be more specific, the following items are included:
 wget https://raw.githubusercontent.com/filemancp4i/ibmmq/main/demo-mq.yaml
 ```
 
-3. Create the TLS cert/key
+3. Create the TLS cert/key. Two files (tls.crt and tls.key) are created by openssl.
 ```
 openssl req -newkey rsa:2048 -nodes -keyout tls.key -subj "/CN=localhost" -x509 -days 3650 -out tls.crt
 ```
-Two files (tls.crt and tls.key) are created by openssl.
+
 
 4. Execute the following commands to encode the certificate and key. 
 ```
