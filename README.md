@@ -21,8 +21,8 @@ Two files (tls.crt and tls.key) are created by openssl.
 
 Execute the following commands and replace the strings (line 36 and 37) inside the demo-mq.yaml file with the output. 
 ```
-base64 tls.crt 
-base64 tls.key 
+base64 tls.crt -w 0
+base64 tls.key -w 0
 ```
 
 Apply yaml file to OpenShift to create a QueueManager
