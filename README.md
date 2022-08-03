@@ -14,23 +14,33 @@ To be more specific, the following items are included:
 -   Channel
 -   Route
 
+1. Login to your IBM Cloud account and access the IBM Cloud Shell
+
+2. Download the yaml file
+```
+wget https://raw.githubusercontent.com/filemancp4i/ibmmq/main/demo-mq.yaml
+```
+
+3. Create the TLS cert/key
 ```
 openssl req -newkey rsa:2048 -nodes -keyout tls.key -subj "/CN=localhost" -x509 -days 3650 -out tls.crt
 ```
 Two files (tls.crt and tls.key) are created by openssl.
 
-Execute the following commands and replace the strings (line 36 and 37) inside the demo-mq.yaml file with the output. 
+4. Execute the following commands to encode the certificate and key. 
 ```
 base64 tls.crt -w 0
 base64 tls.key -w 0
 ```
 
-Apply yaml file to OpenShift to create a QueueManager
+5. Update demo-mq.yaml file (line 36 and 37) with the output from step 4. 
+
+6. Apply yaml file to OpenShift to create a QueueManager
 ```
 oc apply -f demo-mq.yaml
 ```
 
-Execute this script to create key store. This keystore file will be used by client applications to establish TLS secured connection to MQ.
+7. (optional, not part of the lab) Execute this script to create key store. This keystore file will be used by client applications to establish TLS secured connection to MQ.
 ```
 keytool -import -trustcacerts -alias democrt -file tls.crt -keystore /your/local/file/system/demo.jks
 ```
