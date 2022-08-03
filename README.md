@@ -14,7 +14,7 @@ To be more specific, the following items are included:
 -   Channel
 -   Route
 
-1. Login to your IBM Cloud account and access the IBM Cloud Shell
+1. Login to your IBM Cloud account and access the IBM Cloud Shell and execute oc login
 
 2. Download the yaml file
 ```
