@@ -30,6 +30,8 @@ Two files (tls.crt and tls.key) are created by openssl.
 4. Execute the following commands to encode the certificate and key. 
 ```
 base64 tls.crt -w 0
+```
+```
 base64 tls.key -w 0
 ```
 
