@@ -36,6 +36,9 @@ base64 tls.key -w 0
 ```
 
 5. Update demo-mq.yaml file (line 36 and 37) with the output from step 4. 
+```
+vi demo-mq.yaml
+```
 
 6. Apply yaml file to OpenShift to create a QueueManager
 ```
